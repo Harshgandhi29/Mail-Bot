@@ -42,8 +42,9 @@ def specific():
 
         for a in range (0,len(unseen)):#Filters through all the unseen mail to see if it matches one of the address
             if (unseen[a] in checking) and g ==0 :
-                #light('COM4','7') #arduino lights will come on,// the ports might have to be switched and the pin depending on the user
+                light('COM4','7') #arduino lights will come on,// the ports might have to be switched and the pin depending on the user
                 messagebox.showinfo("New Mail!","New Mail!!")
+                light('COM4','7')
                 g+=1 #ensures the message box only happens ones
                 break #breaks out of main loop
             else:
@@ -54,11 +55,10 @@ def specific():
 def anymail():
     global x
     global unseen
-   # server()
     try:
         unseen[0]
         messagebox.showinfo("Hey","You Have Pending Mail")
-        #light('COM4','7')
+        light('COM4','7')
     except:
         if x == 0:
             messagebox.showinfo("Hey","You NO Have Pending Mail")
@@ -85,7 +85,6 @@ def add():
     global space
     space= Entry(add,width= 50)
     space.pack()
-    print("hi"+space.get())
     name=space.get()
     
     address = Button(add,text='Add people here',command=addlist).pack()
