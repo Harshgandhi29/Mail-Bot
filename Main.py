@@ -1,9 +1,11 @@
 import imaplib
 import email
+import pyttsx3
 from arduino import light
 from mails import *
 from tkinter import*
 from tkinter import messagebox
+from googletrans import Translator
 master = Tk()
 master.geometry("400x400")
 master.title("Mailing Bot")
@@ -65,6 +67,28 @@ def anymail():
             x+=1
         master.after(1000,server)
         master.after(10000, anymail)
+        
+def read():
+    global server
+    speaker = pyttsx3.init()
+    speaker.setProperty('rate',155)
+        server.select('Inbox')
+        __,mail = server.select('Inbox') 
+        __,search = server.search(None, 'UNSEEN')
+        num = [x for x in search[0].split()]
+        for x in range(0,len(num)):  
+            __,data = server.fetch(num[x],'(RFC822)')
+            ___,message=data[0]
+            unencoded_message = email.message_from_bytes(message)# turns the data into bytes for it to be interpreted 
+            for part in unencoded_message.walk():#iterates through different parts of the email(subparts)
+                if(part.get_content_type()=='text/plain'):#when text/plain is found than the message is printed
+                    speaker.say(unencoded_message['From'])
+                    translator = Translator()
+                    result = translator.translate(part.get_payload(),src='en', dest='hi')
+                    messagebox.showinfo(unencoded_message['From'],result.text)
+                    speaker.say(f"says {part.get_payload()}")
+                    speaker.runAndWait()
+                    speaker.stop()
     
 def addlist ():
     global space 
@@ -91,6 +115,9 @@ def add():
 
     texit= Button(add,text='Exit',command=add.destroy).pack()
 
+    
+    
+ 
 def reset_variable():
     global g 
     g= 0
@@ -117,29 +144,32 @@ def reset_variable():
 
 
 def exiting():
-    mexit = Button(master,text='Exit',command=closewindow)
-    mexit.pack()
+    mexit = Button(master,text='Exit',command=closewindow,width=10).pack()
 
 def list():
-    list = Button(master,text='Add People',command=add)
-    list.pack()
+    list = Button(master,text='Add People',command=add,width=10).pack()
 
 def any_unseen():
-    any_unseen = Button(master,text='Unseen Mail', command = anymail).pack()
+    any_unseen = Button(master,text='Unseen Mail', command = anymail,width=10).pack()
 
 def specific_unseen():
-    specific_unseen = Button(master,text='Specific Mail', command =specific).pack()
+    specific_unseen = Button(master,text='Specific Mail', command =specific,width=10).pack()
 
 def reset():
-    reset = Button(master,text='Reset', command =reset_variable).pack()
+    reset = Button(master,text='Reset', command =reset_variable,width=10).pack()
+
+def reading():
+    reading = Button(master,text='Read', command =read,width=10).pack()
+
 
 server()
 list()
 specific_unseen()
 any_unseen()
 reset()
+reading()
 exiting()
-mainloop()     
+mainloop()  
     
 
 
